@@ -1,0 +1,11 @@
+# Исходники держим с LF: проект написан с LF, а autocrlf=true на Windows
+# иначе переписывает все файлы при клоне и меняет размер app.asar.
+* text=auto eol=lf
+
+# Бинарники не трогаем
+*.png binary
+*.ico binary
+*.exe binary
+*.dll binary
+*.zip binary
+*.7z binary

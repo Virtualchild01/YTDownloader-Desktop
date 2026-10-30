@@ -1,0 +1,13 @@
+{
+  "name": "ytdownloader",
+  "productName": "YTDownloader",
+  "version": "1.0.46",
+  "description": "YouTube Downloader для Windows: видео и аудио в любом качестве",
+  "main": "main/main.js",
+  "author": "Vladislav",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  }
+}

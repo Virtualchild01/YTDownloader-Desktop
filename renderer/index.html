@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' media: data: https:; media-src media:; font-src 'self'; connect-src 'none'" />
+  <title>YTDownloader</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===================== Экран загрузки ===================== -->
+    <main id="screen-main" class="screen">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="assets/icon.png" alt="" />
+          <div class="brand-text">
+            <h1>YouTube Downloader</h1>
+            <p>Скачивание видео и аудио в любом качестве</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="btn-account" class="btn btn-tonal btn-small" type="button">Войти</button>
+          <button id="btn-support" class="icon-btn" type="button" title="Поддержать разработчика">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9A5.4 5.4 0 0 1 12 6.3 5.4 5.4 0 0 1 21.6 12c-2.1 4.4-9.6 9-9.6 9z"/></svg>
+          </button>
+          <button id="btn-settings" class="icon-btn" type="button" title="Настройки">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19.4 13a7.8 7.8 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.7 7.7 0 0 0-1.7-1L14.9 3h-3.8l-.4 2.6a7.7 7.7 0 0 0-1.7 1l-2.4-1-2 3.4L6.6 11a7.8 7.8 0 0 0 0 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.7 1.7 1l.4 2.6h3.8l.4-2.6c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.6zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="card input-card">
+        <div class="input-row">
+          <div class="field">
+            <input id="et-url" type="text" placeholder="Ссылка на YouTube или Shorts" spellcheck="false" />
+          </div>
+          <button id="btn-paste" class="btn btn-tonal" type="button">Вставить</button>
+        </div>
+        <button id="btn-fetch" class="btn btn-primary btn-wide" type="button">Скачать видео</button>
+      </section>
+
+      <button id="card-gallery" class="card gallery-card" type="button">
+        <svg class="gallery-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor"/>
+        </svg>
+        <span class="gallery-label">Мои загрузки</span>
+        <span id="gallery-count" class="gallery-count"></span>
+        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+
+      <div id="fetch-status" class="fetch-status hidden">
+        <div id="progress-fetch" class="progress indeterminate"><div></div></div>
+        <p id="fetch-status-text" class="muted small center"></p>
+      </div>
+
+      <section id="card-preview" class="card preview-card hidden">
+        <div class="cover-wrap">
+          <img id="iv-cover" class="cover" alt="" />
+        </div>
+        <p id="tv-author" class="author"></p>
+        <p id="tv-title" class="video-title"></p>
+
+        <label class="label" for="quality">Выберите качество и размер:</label>
+        <div class="select-wrap">
+          <select id="quality"></select>
+        </div>
+
+        <button id="btn-download" class="btn btn-primary btn-wide" type="button">Скачать видео</button>
+
+        <div class="status-block">
+          <div id="progress-download" class="progress hidden"><div></div></div>
+          <p id="tv-status" class="muted small center">Вставьте ссылку, чтобы получить информацию о видео</p>
+        </div>
+      </section>
+
+      <section class="card support-card">
+        <svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9A5.4 5.4 0 0 1 12 6.3 5.4 5.4 0 0 1 21.6 12c-2.1 4.4-9.6 9-9.6 9z"/></svg>
+        <div class="support-text">
+          <strong>Поддержать разработчика</strong>
+          <span>Бесплатно и без рекламы</span>
+        </div>
+        <button id="btn-support-card" class="btn btn-tonal btn-small" type="button">Поддержать</button>
+      </section>
+    </main>
+
+    <!-- ===================== Галерея ===================== -->
+    <main id="screen-gallery" class="screen hidden">
+      <header class="topbar">
+        <button class="icon-btn" type="button" data-back="main" title="Назад">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <h2 class="screen-title">Мои загрузки</h2>
+        <span id="gallery-total" class="muted"></span>
+        <button id="btn-gallery-folder" class="icon-btn" type="button" title="Открыть папку загрузок">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </button>
+        <button id="btn-gallery-refresh" class="icon-btn" type="button" title="Обновить">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </header>
+
+      <div id="gallery-empty" class="empty hidden">
+        <p>Здесь появятся скачанные видео и аудио</p>
+      </div>
+
+      <div id="gallery-grid" class="gallery-grid"></div>
+    </main>
+
+    <!-- ===================== Плеер ===================== -->
+    <main id="screen-player" class="screen player-screen hidden">
+      <header id="player-bar" class="player-bar">
+        <button class="icon-btn on-dark" type="button" data-back="gallery" title="Назад">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <h2 id="player-title" class="player-title"></h2>
+        <button id="btn-player-rotate" class="icon-btn on-dark" type="button" title="Повернуть">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.6-5.7M20 12a8 8 0 0 1-13.6 5.7M17 3v4h-4M7 21v-4h4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <button id="btn-player-fullscreen" class="icon-btn on-dark" type="button" title="На весь экран">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </header>
+      <video id="player-video" controls playsinline></video>
+      <div id="player-audio-art" class="audio-art hidden">
+        <img id="player-audio-img" alt="" />
+      </div>
+    </main>
+
+    <!-- ===================== Настройки ===================== -->
+    <main id="screen-settings" class="screen hidden">
+      <header class="topbar">
+        <button class="icon-btn" type="button" data-back="main" title="Назад">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <h2 class="screen-title">Настройки</h2>
+      </header>
+
+      <section class="card settings-card">
+        <h3 class="settings-heading">Папка для загрузок</h3>
+        <p id="download-dir" class="dir-path"></p>
+        <div class="settings-actions">
+          <button id="btn-choose-dir" class="btn btn-primary btn-small" type="button">Изменить папку</button>
+          <button id="btn-reset-dir" class="btn btn-tonal btn-small" type="button">По умолчанию</button>
+          <button id="btn-open-dir" class="btn btn-tonal btn-small" type="button">Открыть папку</button>
+        </div>
+      </section>
+
+      <section class="card settings-card">
+        <h3 class="settings-heading">Тема приложения</h3>
+        <div class="segmented" role="radiogroup" aria-label="Тема приложения">
+          <button type="button" data-theme="auto" role="radio">Авто</button>
+          <button type="button" data-theme="dark" role="radio">Тёмная</button>
+          <button type="button" data-theme="light" role="radio">Светлая</button>
+        </div>
+      </section>
+
+      <section class="card settings-card">
+        <h3 class="settings-heading">Аккаунт</h3>
+        <p id="account-state" class="muted"></p>
+        <div class="settings-actions">
+          <button id="btn-account-login" class="btn btn-primary btn-small" type="button">Войти</button>
+          <button id="btn-account-logout" class="btn btn-tonal btn-small" type="button">Выйти</button>
+        </div>
+      </section>
+
+      <p id="app-version" class="muted small center"></p>
+    </main>
+
+    <!-- ===================== Общие оверлеи ===================== -->
+    <div id="toast" class="toast hidden" role="status"></div>
+
+    <div id="dialog-support" class="overlay hidden">
+      <div class="dialog">
+        <h3>Поддержка разработчика ❤️</h3>
+        <p>Приложение полностью бесплатное и без рекламы. Всё сделано для Вашего удобства, чтобы не засорять приложение всяким хламом.
+
+Но вы можете поддержать разработчика, в будущем это даст мотивацию на создание новых проектов, спасибо :)</p>
+        <div class="dialog-actions">
+          <button class="btn btn-tonal" type="button" data-close-dialog="dialog-support">Закрыть</button>
+          <button id="btn-donate" class="btn btn-primary" type="button">Поддержать</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="dialog-account" class="overlay hidden">
+      <div class="dialog">
+        <h3>YouTube Аккаунт</h3>
+        <p>Вы успешно авторизованы в YouTube. Куки активны, скачивание работает без ограничений.</p>
+        <div class="dialog-actions">
+          <button class="btn btn-tonal" type="button" data-close-dialog="dialog-account">ОК</button>
+          <button id="btn-relogin" class="btn btn-tonal" type="button">Перезайти</button>
+          <button id="btn-logout" class="btn btn-danger" type="button">Выйти</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="dialog-delete" class="overlay hidden">
+      <div class="dialog">
+        <h3>Удалить файл?</h3>
+        <p id="delete-file-name"></p>
+        <div class="dialog-actions">
+          <button class="btn btn-tonal" type="button" data-close-dialog="dialog-delete">Отмена</button>
+          <button id="btn-confirm-delete" class="btn btn-danger" type="button">Удалить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

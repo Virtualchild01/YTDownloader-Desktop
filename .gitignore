@@ -1,0 +1,27 @@
+node_modules/
+
+# Исключение: @electron/asar лежит в vendor вместе со своими зависимостями
+# (commander, glob, minimatch) — без них упаковка app.asar не запустится
+!vendor/asar/node_modules/
+
+# Артефакты сборки
+dist/
+build/app/
+build/app-source/
+build/.deps/
+
+# Бинарники и инструменты: скачиваются скриптом scripts/fetch-deps.js.
+# ffmpeg.exe весит 100.5 МБ, а GitHub отклоняет файлы больше 100 МБ.
+resources/bin/
+vendor/electron/
+vendor/electron.zip
+vendor/nsis/
+vendor/rcedit-x64.exe
+
+# Отладочные скрипты и снимки экрана разработчика: содержат локальные пути
+# и тестовые данные, для сборки не нужны
+build/test-*.js
+build/steps-*.json
+build/cdp.js
+build/screenshot.ps1
+build/*.png
