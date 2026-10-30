@@ -27,8 +27,19 @@ Name "${APP_NAME}"
 BrandingText "${APP_NAME} ${APP_VERSION}"
 OutFile "${OUT_FILE}"
 InstallDir "$LOCALAPPDATA\Programs\${APP_NAME}"
-InstallDirRegKey HKCU "Software\${APP_NAME}" "InstallDir"
 RequestExecutionLevel user
+
+; Обновление ставится туда же, где стоит предыдущая версия, но только если она
+; там действительно есть. Голый InstallDirRegKey подставлял сохранённый путь
+; даже когда папку удалили вручную, и установка уходила в несуществующий
+; каталог вместо папки по умолчанию.
+Function .onInit
+  ReadRegStr $0 HKCU "Software\${APP_NAME}" "InstallDir"
+  ${If} $0 != ""
+  ${AndIf} ${FileExists} "$0\${APP_EXE}"
+    StrCpy $INSTDIR $0
+  ${EndIf}
+FunctionEnd
 
 VIProductVersion "${APP_VERSION}.0"
 VIAddVersionKey "ProductName" "${APP_NAME}"
